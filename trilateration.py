@@ -1,32 +1,33 @@
+#!/usr/bin/env
+# -*- coding:utf-8 -*-
+ 
 import random
-import numpy as np
 import math
 import json
 from json import encoder
+import numpy as np
 encoder.FLOAT_REPR = lambda o: format(o, '.2f')
 
 
 def get_coords(pi):
     return [{"x": 10*random.random(), "y": 10*random.random(), "r": 10*random.random()}
-                for x in pi for y in pi for r in pi]
-
+            for x in pi for y in pi for r in pi]
+    
 
 xyr = get_coords(range(2))
 
 d = {'x': [i['x'] for i in xyr], 'y': [j['y'] for j in xyr], 'r': [k['x'] for k in xyr]}
 
 
-
-class point:
-    np.seterr(divide='ignore', invalid='ignore')
-
+np.seterr(divide='ignore', invalid='ignore')
+class point:    
     def __init__(self, x, y):
         self.x = x
         self.y = y
-
-
+   
+    
     def __sub__(self, other):
-            return self.x - other.x, self.y -other.y
+        return self.x - other.x, self.y -other.y
         
             
     def __itruediv__(self, scalar=int):
@@ -34,7 +35,7 @@ class point:
             return None
         return self/scalar
         
-
+ 
     def __next__(self):
         if not self.x or self.y:
             raise StopIteration
@@ -42,21 +43,18 @@ class point:
 
     def __iter__(self):
         return self
-
+    
         
-class circle:
-    np.seterr(divide='ignore', invalid='ignore')
-
+class circle:    
     def __init__(self, point, radius):
         self.center = point
         self.radius = radius
-
+    
     def __sub__(self, other):
         return self.center - other.center, self.radius - other.radius
-
+   
     def __add__(self,other):
-        return self.center + other.center, 
-        self.radius +other.radius
+        return self.center + other.center, self.radius +other.radius
                 
     def __itruediv__(self, scalar=int):   
         if scalar == 0:
@@ -68,18 +66,19 @@ class circle:
         if not self.center or self.radius:
             raise StopIteration
         return self.center.pop(), self.radius.pop()
-
+    
     def __iter__(self):
         return self
+    
 
 
 class json_data:
-    def __init__(self, circles, inner_points, *center):
+    def __init__(self, circles, inner_points, center):
         self.circles = circles
         self.inner_points = inner_points
         self.center = center
-    
         
+            
 def jdefault(o):
     if isinstance(o, np.ndarray):
         return list(o)
@@ -90,17 +89,18 @@ def get_two_points_distance(p1, p2):
 
 
 def get_two_circles_intersecting_points(c1, c2):
+
     d = get_two_points_distance(c1.center,c2.center)
     if d >= (c1.radius + c2.radius) or d <= math.fabs(c1.radius -c2.radius):
         return None
-
+    
     a = (pow(c1.radius, 2) - pow(c2.radius, 2) + pow(d, 2)) / (2*d)
     h  = math.sqrt(pow(c1.radius, 2) - pow(a, 2))
     x0 = c1.center.x + a*(c2.center.x - c1.center.x)/d 
     y0 = c1.center.y + a*(c2.center.y - c1.center.y)/d
     rx = -(c2.center.y - c1.center.y) * (h/d)
     ry = -(c2.center.x - c1.center.x) * (h / d)
-
+    
     return [point(x0+rx, y0-ry), point(x0-rx, y0+ry)]
 
 
@@ -117,8 +117,8 @@ def get_all_intersecting_points(circles):
 
 
 def is_contained_in_circles(point, circles):
-    for i in range(len(circles)):
-        if (get_two_points_distance(point, circles[i].center) > (circles[i].radius)):
+    for i, _ in enumerate(circles):
+        if get_two_points_distance(point, circles[i].center) > circles[i].radius:
             return False
         return True
 
@@ -132,14 +132,15 @@ def get_polygon_center(points):
     try:
         center.x /= np.array(num)
         center.y /= np.array(num)   
-    except: ZeroDivisionError()  
-
+    except ZeroDivisionError:
+        return 0
+    
     return center
 
 
 if __name__ == '__main__' :
-
-
+    
+    
     p1 = point(d['x'][0],d['y'][0])
     p2 = point(d['x'][1] ,d['y'][1])
     p3 = point(d['x'][2] ,d['y'][2])
@@ -151,11 +152,11 @@ if __name__ == '__main__' :
     c1 = circle(p1, d['r'][0])
     c2 = circle(p2, d['r'][1])
     c3 = circle(p3, d['r'][2])
-
+    
     c4 = circle(p4, d['r'][3])
     c5 = circle(p5, d['r'][4])
     c6 = circle(p6, d['r'][5])
-
+    
     circle_list = [c1,c2,c3,c4,c5,c6]
 
 
@@ -163,14 +164,14 @@ if __name__ == '__main__' :
     for p in get_all_intersecting_points(circle_list):
         if is_contained_in_circles(p, circle_list):
             inner_points.append(p) 
-
+    
     center = get_polygon_center(inner_points)
-
+    
     in_json = json_data([c1,c2,c3,c4,c5,c6], [p1,p2,p3,p4,p5,p6], center)
-
-
+    
+    
     out_json = json.dumps(in_json, sort_keys=True,
-                        indent=4, default=jdefault)
-
+                          indent=4, default=jdefault)
+    
     with open("data.json", 'w') as fw:
         fw.write(out_json)
