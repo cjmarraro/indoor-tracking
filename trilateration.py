@@ -11,26 +11,22 @@ encoder.FLOAT_REPR = lambda o: format(o, '.2f')
 
 def get_coords(pi):
     return [{"x": 10*random.random(), "y": 10*random.random(), "r": 10*random.random()}
-            for x in pi for y in pi for r in pi]
-    
+            for x in pi for y in pi for r in pi]    
 
 xyr = get_coords(range(2))
 
 d = {'x': [i['x'] for i in xyr], 'y': [j['y'] for j in xyr], 'r': [k['x'] for k in xyr]}
 
-
-np.seterr(divide='ignore', invalid='ignore')
+np.seterr(divide = 'ignore', invalid = 'ignore')
 
 class point:    
     def __init__(self, x, y):
         self.x = x
         self.y = y
-   
-    
+       
     def __sub__(self, other):
         return self.x - other.x, self.y -other.y
-        
-            
+                    
     def __itruediv__(self, scalar=int):
         if scalar == 0:
             return None
@@ -59,8 +55,7 @@ class circle:
     def __itruediv__(self, scalar=int):   
         if scalar == 0:
             return None
-        return self.center / scalar
-
+        return self.center/scalar
 
     def __next__(self):
         if not self.center or self.radius:
@@ -87,19 +82,16 @@ def get_two_points_distance(p1 = [], p2 = []):
 
 
 def get_two_circles_intersecting_points(c1 = [], c2 = []):
-    d = get_two_points_distance(c1.center,c2.center)
+    d = get_two_points_distance(c1.center,c2.center)   
     if d >= (c1.radius + c2.radius) or d <= math.fabs(c1.radius -c2.radius):
-        return None
-    
+        return None    
     a = (pow(c1.radius, 2) - pow(c2.radius, 2) + pow(d, 2)) / (2*d)
     h  = math.sqrt(pow(c1.radius, 2) - pow(a, 2))
     x0 = c1.center.x + a*(c2.center.x - c1.center.x)/d 
     y0 = c1.center.y + a*(c2.center.y - c1.center.y)/d
     rx = -(c2.center.y - c1.center.y) * (h/d)
-    ry = -(c2.center.x - c1.center.x) * (h / d)
-    
+    ry = -(c2.center.x - c1.center.x) * (h / d)   
     return [point(x0+rx, y0-ry), point(x0-rx, y0+ry)]
-
 
 def get_all_intersecting_points(circles):
     points = []
@@ -112,13 +104,11 @@ def get_all_intersecting_points(circles):
                 points.extend(res)
     return points
 
-
 def is_contained_in_circles(point, circles):
     for i, _ in enumerate(circles):
         if get_two_points_distance(point, circles[i].center) > circles[i].radius:
             return False
         return True
-
 
 def get_polygon_center(points):
     center = point(0, 0)
