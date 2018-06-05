@@ -20,6 +20,7 @@ d = {'x': [i['x'] for i in xyr], 'y': [j['y'] for j in xyr], 'r': [k['x'] for k 
 
 
 np.seterr(divide='ignore', invalid='ignore')
+
 class point:    
     def __init__(self, x, y):
         self.x = x
@@ -33,8 +34,7 @@ class point:
     def __itruediv__(self, scalar=int):
         if scalar == 0:
             return None
-        return self/scalar
-        
+        return self/scalar       
  
     def __next__(self):
         if not self.x or self.y:
@@ -42,7 +42,7 @@ class point:
         return self.x.pop(), self.y.pop()      
 
     def __iter__(self):
-        return self
+        return iter(self)
     
         
 class circle:    
@@ -54,7 +54,7 @@ class circle:
         return self.center - other.center, self.radius - other.radius
    
     def __add__(self,other):
-        return self.center + other.center, self.radius +other.radius
+        return self.center + other.center, self.radius + other.radius
                 
     def __itruediv__(self, scalar=int):   
         if scalar == 0:
@@ -68,28 +68,25 @@ class circle:
         return self.center.pop(), self.radius.pop()
     
     def __iter__(self):
-        return self
+        return iter(self)
     
-
 
 class json_data:
     def __init__(self, circles, inner_points, center):
         self.circles = circles
         self.inner_points = inner_points
         self.center = center
-        
-            
+                    
 def jdefault(o):
     if isinstance(o, np.ndarray):
         return list(o)
     return o.__dict__
 
-def get_two_points_distance(p1, p2):
+def get_two_points_distance(p1 = [], p2 = []):
     return math.sqrt(pow((p1.x - p2.x), 2) + pow((p1.y - p2.y), 2))
 
 
-def get_two_circles_intersecting_points(c1, c2):
-
+def get_two_circles_intersecting_points(c1 = [], c2 = []):
     d = get_two_points_distance(c1.center,c2.center)
     if d >= (c1.radius + c2.radius) or d <= math.fabs(c1.radius -c2.radius):
         return None
@@ -133,8 +130,7 @@ def get_polygon_center(points):
         center.x /= np.array(num)
         center.y /= np.array(num)   
     except ZeroDivisionError:
-        return 0
-    
+        return 0.0    
     return center
 
 
@@ -168,7 +164,6 @@ if __name__ == '__main__' :
     center = get_polygon_center(inner_points)
     
     in_json = json_data([c1,c2,c3,c4,c5,c6], [p1,p2,p3,p4,p5,p6], center)
-    
     
     out_json = json.dumps(in_json, sort_keys=True,
                           indent=4, default=jdefault)
