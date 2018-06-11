@@ -1,4 +1,4 @@
-#!/usr/bin/env
+##!/usr/bin/env
 # -*- coding:utf-8 -*-
  
 import random
@@ -19,7 +19,7 @@ d = {'x': [i['x'] for i in xyr], 'y': [j['y'] for j in xyr], 'r': [k['x'] for k 
 
 np.seterr(divide = 'ignore', invalid = 'ignore')
 
-class point:    
+class point(object):    
     def __init__(self, x, y):
         self.x = x
         self.y = y
@@ -33,7 +33,7 @@ class point:
         return self/scalar       
  
     def __next__(self):
-        if not self.x or self.y:
+        if not self.x or not self.y:
             raise StopIteration
         return self.x.pop(), self.y.pop()      
 
@@ -41,7 +41,7 @@ class point:
         return iter(self)
     
         
-class circle:    
+class circle(object):    
     def __init__(self, point, radius):
         self.center = point
         self.radius = radius
@@ -58,7 +58,7 @@ class circle:
         return self.center/scalar
 
     def __next__(self):
-        if not self.center or self.radius:
+        if not self.center or not self.radius:
             raise StopIteration
         return self.center.pop(), self.radius.pop()
     

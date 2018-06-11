@@ -98,8 +98,8 @@ def dijkstra(graph, init):
     
     while len(Q):
         # extracts vertex with smallest estD in Q, adds to S
-        s_v = heapq.heappop(Q)
-        current = s_v[1]
+        s_to_v = heapq.heappop(Q)
+        current = s_to_v[1]
         current.set_searched()
         
         #Relax 
