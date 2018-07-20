@@ -1,10 +1,12 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 
 import tensorflow as tf
 import numpy as np
+import matplotlib
+matplotlib.use("agg")
 import matplotlib.pyplot as plt
-
 
 x0 = [[0],[0],[0],[0],[0],[0]]
 
@@ -20,22 +22,24 @@ dt = 0.09
 sigma_Q = .001
 sigma_z = 0.95
 
-
 tf.reset_default_graph()
  
-
 with tf.variable_scope('constants'):
     F = tf.constant([[1, 0,dt ,0,dt**2/2,0],
     [0, 1,0,dt,0,dt**2/2],[0,0,1,0,dt,0],
-    [0,0,0,1,0,dt],[0,0,0,0,1,0],
-    [0,0,0,0,0,1]], dtype=tf.float32)
+    [0,0,0,1,0,dt],[0,0,0,0,1,0],[0,0,0,0,0,1]], 
+    dtype=tf.float32)
 
-    G = tf.constant([[dt**2/2],[dt],[1], [1],[dt],[dt**2/2]], dtype=tf.float32)
+    G = tf.constant([[dt**2/2],[dt],[1], [1],[dt],[dt**2/2]], 
+    dtype=tf.float32)
+    
     print(G.shape)
+    
     Q = tf.matmul(G, G, transpose_b=True) * sigma_Q**2
     H = tf.constant([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
               [0.0, 1.0, 0.0, 0.0, 0.0, 0.0]], dtype=tf.float32)
-    R = tf.constant([[sigma_z**2,0],[0,sigma_z**2]], dtype=tf.float32)
+    R = tf.constant([[sigma_z**2,0],[0,sigma_z**2]], 
+    dtype=tf.float32)
   
 
 with tf.variable_scope('model'):
