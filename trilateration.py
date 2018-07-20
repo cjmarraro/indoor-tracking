@@ -3,9 +3,10 @@
  
 import random
 import math
+import numpy as np
+import types
 import json
 from json import encoder
-import numpy as np
 encoder.FLOAT_REPR = lambda o: format(o, '.2f')
 
 np.seterr(divide = 'ignore', invalid = 'ignore')
@@ -62,10 +63,9 @@ class json_data(object):
         self.circles = circles
         self.inner_points = inner_points
         self.center = center
-        
-import types                
+                        
 def jdefault(o):
-    if isinstance(o,  types.GeneratorType):
+    if isinstance(o, types.GeneratorType):
         return list(o)
     return o.__dict__
 
@@ -113,7 +113,7 @@ def get_polygon_center(points):
         center.x /= num
         center.y /= num   
     except ZeroDivisionError:
-        return 0   
+        return    
     return center
 
 
@@ -164,5 +164,5 @@ if __name__ == '__main__':
     out_json = json.dumps(in_json, sort_keys=True,
                           indent=4, default=jdefault)
     
-    with open("data.json", 'w') as fw:
+    with open("data.json", 'a') as fw:
         fw.write(out_json)
