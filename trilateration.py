@@ -8,12 +8,14 @@ import types
 import json
 from json import encoder
 encoder.FLOAT_REPR = lambda o: format(o, '.2f')
-np.seterr(divide='ignore', invalid='ignore')
 
 class Point(object):    
     def __init__(self, x, y):
         self.x = x
         self.y = y
+
+    def __repr__(self):
+        return 'Point({!r}, {!r})'.format(self.x, self.y) 
        
     def __isub__(self, other):
         return self.x - other.x, self.y - other.y
@@ -39,6 +41,9 @@ class Circle(object):
     def __init__(self, Point, radius):
         self.center = Point
         self.radius = radius
+    
+    def __repr__(self):
+        return 'Circle({!r}, {!r})'.format(self.center, self.radius)
     
     def __isub__(self, other):
         return self.center - other.center, self.radius - other.radius
@@ -136,20 +141,16 @@ if __name__ == '__main__':
     ycoord = get_y(yy)
     rad = get_r(rr)
     
-    
     p1 = Point(next(xcoord), next(ycoord))
     p2 = Point(next(xcoord), next(ycoord))
     p3 = Point(next(xcoord), next(ycoord))
     
-   
     c1 = Circle(p1, next(rad))
     c2 = Circle(p2, next(rad))
     c3 = Circle(p3, next(rad))
-    
-    
+
     circle_list = [c1, c2, c3]
     
-
     inner_points = []
     for p in get_all_intersecting_points(circle_list):
         if is_contained_in_circles(p, circle_list):
@@ -163,6 +164,6 @@ if __name__ == '__main__':
                           indent=4, default= json_data.jdefault)
     
     with open("data.json", 'a') as fw:
-        while center is None:
+        while None:
             continue
         fw.write(out_json)
