@@ -23,7 +23,10 @@ class Point(object):
     def __itruediv__(self, scalar=int):
         if scalar == 0:
             return 
-        return self/scalar       
+        return self/scalar 
+
+    def __getitem__(self, n):
+        return self[n]      
  
     def __next__(self):
         if not self.x or not self.y:
@@ -31,7 +34,7 @@ class Point(object):
         return self.x.pop(), self.y.pop()      
 
     def __iter__(self):
-        return self
+        return self.__iter__()
 
     @classmethod
     def get_two_points_distance(cls, q, p):
@@ -55,6 +58,9 @@ class Circle(object):
         if scalar == 0:
             return 
         return self.center/scalar
+    
+    def __getitem__(self, n):
+        return self[n]
 
     def __next__(self):
         if not self.center or not self.radius:
@@ -62,7 +68,8 @@ class Circle(object):
         return self.center.pop(), self.radius.pop()
     
     def __iter__(self):
-        return self
+        return self.__iter__()
+                
 
     @classmethod
     def get_two_circles_intersecting_points(cls, cj, ck):
@@ -131,11 +138,11 @@ if __name__ == '__main__':
     def get_r(r0):                    
             yield from r0
             
-    xx= [10*random.random() for x in range(10)]
+    xx= [10*random.random() for x in range(5)]
     
-    yy= [10*random.random() for y in range(10)]
+    yy= [10*random.random() for y in range(5)]
    
-    rr= [10*random.random() for r in range(10)]
+    rr= [10*random.random() for r in range(5)]
     
     xcoord = get_x(xx)
     ycoord = get_y(yy)
@@ -164,6 +171,6 @@ if __name__ == '__main__':
                           indent=4, default= json_data.jdefault)
     
     with open("data.json", 'a') as fw:
-        while None:
+        while center is None:
             continue
         fw.write(out_json)
