@@ -27,19 +27,17 @@ tf.reset_default_graph()
 with tf.variable_scope('constants'):
     F = tf.constant([[1, 0,dt ,0,dt**2/2,0],
     [0, 1,0,dt,0,dt**2/2],[0,0,1,0,dt,0],
-    [0,0,0,1,0,dt],[0,0,0,0,1,0],[0,0,0,0,0,1]], 
-    dtype=tf.float32)
+    [0,0,0,1,0,dt],[0,0,0,0,1,0],
+    [0,0,0,0,0,1]],dtype=tf.float32)
 
-    G = tf.constant([[dt**2/2],[dt],[1], [1],[dt],[dt**2/2]], 
+    G = tf.constant([[dt**2/2],[dt],[1],[1],[dt],[dt**2/2]], 
     dtype=tf.float32)
-    
     print(G.shape)
     
     Q = tf.matmul(G, G, transpose_b=True) * sigma_Q**2
     H = tf.constant([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-              [0.0, 1.0, 0.0, 0.0, 0.0, 0.0]], dtype=tf.float32)
-    R = tf.constant([[sigma_z**2,0],[0,sigma_z**2]], 
-    dtype=tf.float32)
+              [0.0, 1.0, 0.0, 0.0, 0.0, 0.0]],dtype=tf.float32)
+    R = tf.constant([[sigma_z**2,0],[0,sigma_z**2]],dtype=tf.float32)
   
 
 with tf.variable_scope('model'):
@@ -82,8 +80,8 @@ with tf.Session() as sess:
     summary_writer = tf.summary.FileWriter('logdir/', sess.graph)
     
     N =500
-    
     t = [i*dt for i in range(N)]
+
     model = np.array([x0]*N, dtype=np.float32)
     estimate1 = np.array([x0]*N, dtype=np.float32)    
     error1= np.array([P0]*N, dtype=np.float32)
@@ -95,32 +93,25 @@ with tf.Session() as sess:
     
     
 
- #plot
- 
- 
+#plot
+  
 plt.figure(num=None, figsize=(14, 6))
  
- 
 plt.subplot(1, 2, 1)
- 
- 
+  
 plt.fill_between(t,estimate2[:,0,0]+np.sqrt(error2[:,0,0]),estimate2[:,0,0]-np.sqrt(error2[:,0,0]), color = [0.5,0.75,0.75,.5])
 plt.plot(t, model[:,0,0],  color='k', linewidth=2.0)
 plt.plot(t, observations[:,0,0], color='r', marker='.', linestyle='None')
- 
- 
+  
 plt.ylabel('Position', fontsize=18)
 plt.xlabel('Time', fontsize=18)
- 
  
 plt.subplot(1, 2, 2)
 plt.fill_between(t,estimate2[:,2,0]+np.sqrt(error2[:,2,2]),estimate2[:,2,0]-np.sqrt(error2[:,2,2]), color = [0.5,0.75,0.75,.5])
 plt.plot(t, model[:,2,0],  color='k', linewidth=2.0)
  
- 
 plt.ylabel('Velocity', fontsize=18)
 plt.xlabel('Time', fontsize=18)
 
- 
 plt.savefig('visual_KF.png')
 # =============================================================================
