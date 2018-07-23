@@ -41,8 +41,8 @@ class Point(object):
         return math.sqrt(pow((q.x - p.x), 2) + pow((q.y - p.y), 2))
         
 class Circle(object):    
-    def __init__(self, Point, radius):
-        self.center = Point
+    def __init__(self, point, radius):
+        self.center = point
         self.radius = radius
     
     def __repr__(self):
@@ -58,30 +58,21 @@ class Circle(object):
         if scalar == 0:
             return 
         return self.center/scalar
-    
-    def __getitem__(self, n):
-        return self[n]
-
-    def __next__(self):
-        if not self.center or not self.radius:
-            raise StopIteration
-        return self.center.pop(), self.radius.pop()
-    
-    def __iter__(self):
-        return self.__iter__()
                 
-
     @classmethod
     def get_two_circles_intersecting_points(cls, cj, ck):
         d = Point.get_two_points_distance(cj.center, ck.center)       
+        
         if d >= (cj.radius + ck.radius) or d <= math.fabs(cj.radius - ck.radius):
             return None   
+        
         a = (pow(cj.radius, 2) - pow(ck.radius, 2) + pow(d, 2)) / (2*d)
         h  = math.sqrt(pow(cj.radius, 2) - pow(a, 2))
         x0 = cj.center.x + a*(ck.center.x - cj.center.x)/d 
         y0 = cj.center.y + a*(ck.center.y - cj.center.y)/d
         rx = -(ck.center.x - cj.center.x) * (h/d)
         ry = -(ck.center.y - cj.center.y) * (h / d)   
+        
         return [Point(x0+rx, y0-ry), Point(x0-rx, y0+ry)]
     
 
@@ -90,6 +81,7 @@ class json_data(object):
         self.circles = circles
         self.inner_points = inner_points
         self.center = center
+        
     @staticmethod                    
     def jdefault(o):
         if isinstance(o, types.GeneratorType):
@@ -137,6 +129,7 @@ if __name__ == '__main__':
             
     def get_r(r0):                    
             yield from r0
+    
             
     xx= [10*random.random() for x in range(5)]
     
