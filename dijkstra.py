@@ -1,6 +1,7 @@
+#!/usr/bin/env python3
+# -*- coding:utf-8 -*-
 import sys
 import heapq
-import trilateration
 
 class Vertex:
     def __init__(self, u):
@@ -60,7 +61,7 @@ class Graph:
         else:
             return None
 
-    def add_edge(self, v_i, v_j, wt = 0):
+    def add_edge(self, v_i, v_j, wt=0):
         if v_i not in self.vertices:
             self.add_vertex(v_i)
         
@@ -88,26 +89,19 @@ def delta_SP(v, path):
 
 def dijkstra(graph, init):
     print ('''Dijkstra's shortest path''')
+    init.set_estD(0) # Initialize single source node s := 0 for G(V, s)    
+    Q = [(v.get_estD(),v) for v in graph] # Insert (estD(v),v) into min priority queue, Q, for each v in V - {s}
+    heapq.heapify(Q)     
     
-    # Initialize single source node s := 0 for G(V, s)
-    init.set_estD(0)
-    
-    # Insert (estD(v),v) into min priority queue, Q, for each v in V - {s}
-    Q = [(v.get_estD(),v) for v in graph]
-    heapq.heapify(Q) 
-    
-    while len(Q):
-        # extracts vertex with smallest estD in Q, adds to S
+    while len(Q): # extracts vertex with smallest estD in Q, adds to S
         s_to_v = heapq.heappop(Q)
         current = s_to_v[1]
-        current.set_searched()
-        
-        #Relax 
-        for node in current.adj:
+        current.set_searched()        
+
+        for node in current.adj: #Relax 
             if node.searched:
                 continue
-            update_estD = current.get_estD() + current.get_weight(node)
-            
+            update_estD = current.get_estD() + current.get_weight(node)            
             if update_estD < node.get_estD():
                 node.set_estD(update_estD)
                 node.set_parent(current)
@@ -115,12 +109,10 @@ def dijkstra(graph, init):
                         %(current.get_value(), node.get_value(), node.get_estD()))
             else:
                 print ('not updated : current = %s next = %s update_estD = %s' \
-                        %(current.get_value(), node.get_value(), node.get_estD()))
-        # Rebuild heap
-        while len(Q):
+                        %(current.get_value(), node.get_value(), node.get_estD()))        
+        while len(Q): # Rebuild heap
             heapq.heappop(Q)
-        # Assign nodes not searched to Q
-        Q = [(v.get_estD(),v) for v in graph if not v.searched]
+        Q = [(v.get_estD(),v) for v in graph if not v.searched] # Assign nodes not searched to Q
         heapq.heapify(Q)
 
 
@@ -128,22 +120,22 @@ if __name__ == '__main__':
 
     g = Graph()
 
-    g.add_vertex('a')
-    g.add_vertex('b')
-    g.add_vertex('c')
-    g.add_vertex('d')
-    g.add_vertex('e')
-    g.add_vertex('f')
+    g.add_vertex('a1')
+    g.add_vertex('a2')
+    g.add_vertex('a3')
+    g.add_vertex('b1')
+    g.add_vertex('b2')
+    g.add_vertex('b3')
 
-    g.add_edge('a', 'b', 7)  
-    g.add_edge('a', 'c', 9)
-    g.add_edge('a', 'f', 14)
-    g.add_edge('b', 'c', 10)
-    g.add_edge('b', 'd', 15)
-    g.add_edge('c', 'd', 11)
-    g.add_edge('c', 'f', 2)
-    g.add_edge('d', 'e', 6)
-    g.add_edge('e', 'f', 9)
+    g.add_edge('a1', 'a2', 7)  
+    g.add_edge('a1', 'a3', 9)
+    g.add_edge('a1', 'b3', 14)
+    g.add_edge('a2', 'a3', 10)
+    g.add_edge('a2', 'b1', 15)
+    g.add_edge('a3', 'b1', 11)
+    g.add_edge('a3', 'b3', 2)
+    g.add_edge('b1', 'b2', 6)
+    g.add_edge('b2', 'b3', 9)
 
     print ('Graph data:')
     for v in g:
@@ -151,10 +143,11 @@ if __name__ == '__main__':
             v_val = v.get_value()
             w_val = w.get_value()
             print ('( %s , %s, %3d)'  % ( v_val, w_val, v.get_weight(w)))        
-    dijkstra(g, g.get_vertex('a')) 
-
-    target = g.get_vertex('e')
+    
+    dijkstra(g, g.get_vertex('a1')) 
+    target = g.get_vertex('b2')
     path = [target.get_value()]
     delta_SP(target, path)
+    
     print ('The shortest path : %s' %(path[::-1]))
  
