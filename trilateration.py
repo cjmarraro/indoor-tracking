@@ -37,9 +37,10 @@ class Point(object):
         return self.__iter__()
 
     @classmethod
-    def get_two_points_distance(cls, q, p):
-        return math.sqrt(pow((q.x - p.x), 2) + pow((q.y - p.y), 2))
+    def get_two_points_distance(cls, t, s):
+        return math.sqrt(pow((t.x - s.x), 2) + pow((t.y - s.y), 2))
         
+
 class Circle(object):    
     def __init__(self, Point, radius):
         self.center = Point
@@ -84,10 +85,9 @@ class Circle(object):
         return [Point(x0+rx, y0-ry), Point(x0-rx, y0+ry)]
     
 
+
 class json_data(object):
-    def __init__(self, circles, inner_points, center):
-        self.circles = circles
-        self.inner_points = inner_points
+    def __init__(self, center):
         self.center = center
         
     @staticmethod                    
@@ -166,12 +166,12 @@ if __name__ == '__main__':
     
     center = get_polygon_center(inner_points)
     
-    in_json = json_data([c1,c2,c3],[p1,p2,p3],center)
+    in_json = json_data(center)
     
     out_json = json.dumps(in_json, sort_keys=True,
                           indent=4, default= json_data.jdefault)
     
     with open("data.json", 'a') as fw:
-        while center is None:
+        while center == None:
             continue
         fw.write(out_json)
