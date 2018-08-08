@@ -92,7 +92,8 @@ with tf.Session() as sess:
     error2 = np.array([P0]*N, dtype=np.float32)    
     observations = np.zeros((N,2,1), dtype=np.float32)
     for i in range(1,N):
-        model[i], estimate1[i] , error1[i], estimate2[i], error2[i], observations[i]=sess.run([update_model, predict_xhat, predict_P, update_xhat,update_P,z])
+        model[i], estimate1[i] , error1[i], estimate2[i], error2[i], \
+         observations[i]=sess.run([update_model, predict_xhat, predict_P, update_xhat,update_P,z])
     
 
 #plot
@@ -101,7 +102,8 @@ plt.figure(num=None, figsize=(14, 6))
  
 plt.subplot(1, 2, 1)
   
-plt.fill_between(t,estimate2[:,0,0]+np.sqrt(error2[:,0,0]),estimate2[:,0,0]-np.sqrt(error2[:,0,0]), color = [0.5,0.75,0.75,.5])
+plt.fill_between(t,estimate2[:,0,0]+np.sqrt(error2[:,0,0]), \
+    estimate2[:,0,0]-np.sqrt(error2[:,0,0]), color = [0.5,0.75,0.75,.5])
 plt.plot(t, model[:,0,0],  color='k', linewidth=2.0)
 plt.plot(t, observations[:,0,0], color='r', marker='.', linestyle='None')
   
@@ -109,7 +111,8 @@ plt.ylabel('Position', fontsize=18)
 plt.xlabel('Time', fontsize=18)
  
 plt.subplot(1, 2, 2)
-plt.fill_between(t,estimate2[:,2,0]+np.sqrt(error2[:,2,2]),estimate2[:,2,0]-np.sqrt(error2[:,2,2]), color = [0.5,0.75,0.75,.5])
+plt.fill_between(t,estimate2[:,2,0]+np.sqrt(error2[:,2,2]), \
+    estimate2[:,2,0]-np.sqrt(error2[:,2,2]), color = [0.5,0.75,0.75,.5])
 plt.plot(t, model[:,2,0],  color='k', linewidth=2.0)
  
 plt.ylabel('Velocity', fontsize=18)
