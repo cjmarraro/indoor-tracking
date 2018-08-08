@@ -89,16 +89,20 @@ def delta_SP(v, path):
 
 def dijkstra(graph, init):
     print ('''Dijkstra's shortest path''')
-    init.set_estD(0) # Initialize single source node s := 0 for G(V, s)    
-    Q = [(v.get_estD(),v) for v in graph] # Insert (estD(v),v) into min priority queue, Q, for each v in V - {s}
+    #Initialize single source node s := 0 for G(V, s) 
+    init.set_estD(0)    
+    #Insert (estD(v),v) into min priority queue,Q, for each v in the set V - {s}
+    Q = [(v.get_estD(),v) for v in graph] 
     heapq.heapify(Q)     
     
-    while len(Q): # extracts vertex with smallest estD in Q, adds to S
+    #Extracts vertex with smallest estD in Q, adds to S
+    while len(Q): 
         s_to_v = heapq.heappop(Q)
         current = s_to_v[1]
         current.set_searched()        
 
-        for node in current.adj: #Relax 
+        #Relax
+        for node in current.adj:  
             if node.searched:
                 continue
             update_estD = current.get_estD() + current.get_weight(node)            
@@ -110,9 +114,11 @@ def dijkstra(graph, init):
             else:
                 print ('not updated : current = %s next = %s update_estD = %s' \
                         %(current.get_value(), node.get_value(), node.get_estD()))        
-        while len(Q): # Rebuild heap
+        #Rebuild heap
+        while len(Q): 
             heapq.heappop(Q)
-        Q = [(v.get_estD(),v) for v in graph if not v.searched] # Assign nodes not searched to Q
+        #Assign vertices not searched to Q    
+        Q = [(v.get_estD(),v) for v in graph if not v.searched] 
         heapq.heapify(Q)
 
 
