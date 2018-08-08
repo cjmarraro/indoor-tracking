@@ -7,6 +7,9 @@ import numpy as np
 import matplotlib
 matplotlib.use("agg")
 import matplotlib.pyplot as plt
+import logging
+logging.basicConfig(level=logging.DEBUG)
+logging.disable(logging.CRITICAL)
 
 x0 = [[0],[0],[0],[0],[0],[0]]
 
@@ -32,7 +35,7 @@ with tf.variable_scope('constants'):
 
     G = tf.constant([[dt**2/2],[dt],[1],[1],[dt],[dt**2/2]], 
     dtype=tf.float32)
-    print(G.shape)
+    logging.debug(G.shape)
     
     Q = tf.matmul(G, G, transpose_b=True) * sigma_Q**2
     H = tf.constant([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -45,14 +48,14 @@ with tf.variable_scope('model'):
         x = tf.Variable(x0, dtype=tf.float32)
     with tf.variable_scope('noise'):
         w = G*tf.random_normal([1], mean=0, stddev=sigma_Q)
-    print(w) 
+    logging.debug(w.shape) 
     with tf.variable_scope('update_model'):
         update_model = tf.assign(x, tf.matmul(F,x) + w)
     
 with tf.variable_scope('observation'):
     v = tf.random_normal([1], mean=0, stddev=sigma_z)
     z = tf.matmul(H,x) + v
-    print(v.shape)
+    logging.debug(v.shape)
 
 with tf.variable_scope('kalman_filter'):
     with tf.variable_scope('model_estimate'):
@@ -90,7 +93,6 @@ with tf.Session() as sess:
     observations = np.zeros((N,2,1), dtype=np.float32)
     for i in range(1,N):
         model[i], estimate1[i] , error1[i], estimate2[i], error2[i], observations[i]=sess.run([update_model, predict_xhat, predict_P, update_xhat,update_P,z])
-    
     
 
 #plot
