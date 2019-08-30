@@ -7,7 +7,9 @@ import numpy as np
 import matplotlib
 matplotlib.use("agg")
 import matplotlib.pyplot as plt
+
 import logging
+
 logging.basicConfig(level=logging.DEBUG)
 logging.disable(logging.CRITICAL)
 
@@ -28,19 +30,33 @@ sigma_z = 0.95
 tf.reset_default_graph()
  
 with tf.variable_scope('constants'):
-    F = tf.constant([[1, 0,dt ,0,dt**2/2,0],
-    [0, 1,0,dt,0,dt**2/2],[0,0,1,0,dt,0],
-    [0,0,0,1,0,dt],[0,0,0,0,1,0],
-    [0,0,0,0,0,1]],dtype=tf.float32)
+    F = tf.constant([
+        [1, 0, dt, 0, dt**2/2, 0],
+        [0, 1, 0, dt, 0, dt**2/2],
+        [0, 0, 1, 0, dt, 0],
+        [0, 0, 0, 1, 0, dt],
+        [0, 0, 0, 0, 1, 0],
+        [0, 0, 0, 0, 0, 1]],
+        dtype=tf.float32)
 
-    G = tf.constant([[dt**2/2],[dt],[1],[1],[dt],[dt**2/2]], 
-    dtype=tf.float32)
+    G = tf.constant([
+        [dt**2/2], [dt], [1], 
+        [1], [dt], [dt**2/2]], 
+        dtype=tf.float32)
+    
     logging.debug(G.shape)
     
     Q = tf.matmul(G, G, transpose_b=True) * sigma_Q**2
-    H = tf.constant([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-              [0.0, 1.0, 0.0, 0.0, 0.0, 0.0]],dtype=tf.float32)
-    R = tf.constant([[sigma_z**2,0],[0,sigma_z**2]],dtype=tf.float32)
+    
+    H = tf.constant([
+        [1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 1.0, 0.0, 0.0, 0.0, 0.0]],
+        dtype=tf.float32)
+
+    R = tf.constant([
+        [sigma_z**2, 0],
+        [0, sigma_z**2]],
+        dtype=tf.float32)
   
 
 with tf.variable_scope('model'):
@@ -91,9 +107,11 @@ with tf.Session() as sess:
     estimate2 = np.array([x0]*N, dtype=np.float32)
     error2 = np.array([P0]*N, dtype=np.float32)    
     observations = np.zeros((N,2,1), dtype=np.float32)
+    
     for i in range(1,N):
         model[i], estimate1[i] , error1[i], estimate2[i], error2[i], \
-         observations[i]=sess.run([update_model, predict_xhat, predict_P, update_xhat,update_P,z])
+            observations[i] = sess.run([update_model, predict_xhat, \
+            predict_P, update_xhat,update_P,z])
     
 
 #plot

@@ -1,13 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
- 
-import random
-import math
+
 import numpy as np
-import types
-import json
+import types, json, random, math, time
 from json import encoder
 encoder.FLOAT_REPR = lambda o: format(o, '.2f')
+
+class json_data(object):
+    def __init__(self, center):
+        self.time = time.time()
+        self.center = center
+        
+    @staticmethod                    
+    def jdefault(o):
+        if isinstance(o, types.GeneratorType):
+            return list(o).copy()
+        return o.__dict__
 
 class Point(object):    
     def __init__(self, x, y):
@@ -15,7 +23,7 @@ class Point(object):
         self.y = y
 
     def __repr__(self):
-        return 'Point({!r}, {!r})'.format(self.x, self.y) 
+        return '({!r}, {!r})'.format(self.x, self.y) 
        
     def __isub__(self, other):
         return self.x - other.x, self.y - other.y
@@ -25,7 +33,7 @@ class Point(object):
             return 
         return self/scalar 
 
-    def __getitem__(self, n):
+    def __getitem__(self, n = int):
         return self[n]      
  
     def __next__(self):
@@ -33,12 +41,10 @@ class Point(object):
             raise StopIteration
         return self.x.pop(), self.y.pop()      
 
-    def __iter__(self):
-        return self.__iter__()
 
     @classmethod
-    def get_two_points_distance(cls, t, s):
-        return math.sqrt(pow((t.x - s.x), 2) + pow((t.y - s.y), 2))
+    def get_two_points_distance(cls, p1, p2):
+        return math.sqrt(pow((p1.x - p2.x), 2) + pow((p1.y - p2.y), 2))
         
 
 class Circle(object):    
@@ -47,7 +53,7 @@ class Circle(object):
         self.radius = radius
     
     def __repr__(self):
-        return 'Circle({!r}, {!r})'.format(self.center, self.radius)
+        return '({!r}, {!r})'.format(self.center, self.radius)
     
     def __isub__(self, other):
         return self.center - other.center, self.radius - other.radius
@@ -58,15 +64,8 @@ class Circle(object):
     def __itruediv__(self, scalar=int):   
         if scalar == 0:
             return 
-        return self.center/scalar
+        return self.center/scalar 
 
-    def __next__(self):
-        if not self.center or not self.radius:
-            raise StopIteration
-        return self.center.pop(), self.radius.pop()      
-
-    def __iter__(self):
-        return self.__iter__()
 
     @classmethod
     def get_two_circles_intersecting_points(cls, cj, ck):
@@ -85,23 +84,12 @@ class Circle(object):
         return [Point(x0+rx, y0-ry), Point(x0-rx, y0+ry)]
     
 
-
-class json_data(object):
-    def __init__(self, center):
-        self.center = center
-        
-    @staticmethod                    
-    def jdefault(o):
-        if isinstance(o, types.GeneratorType):
-            return list(o)
-        return o.__dict__
-
 def get_all_intersecting_points(circles):
     points = []
-    num = len(circles)
-    for i in range(num):
+    N = len(circles)
+    for i in range(N):
         j = i + 1
-        for k in range(j, num):
+        for k in range(j, N):
             res = Circle.get_two_circles_intersecting_points(circles[i], circles[k])
             if res:
                 points.extend(res)
@@ -115,63 +103,61 @@ def is_contained_in_circles(point, circles):
 
 def get_polygon_center(points):
     center = Point(0, 0)
-    num = len(points)
-    for i in range(num):
+    N = len(points)
+    
+    for i in range(N):
         center.x += points[i].x
         center.y += points[i].y
     try:
-        center.x /= num
-        center.y /= num   
+        center.x /= N
+        center.y /= N   
     except ZeroDivisionError:
-        return    
+        return                
     return center
+
 
 
 if __name__ == '__main__':
 
-    def get_x(x0):
-            yield from x0
+    #Test
+
+    def get_coords(p):
+            yield from p
             
-    def get_y(y0):
-            yield from y0
-            
-    def get_r(r0):                    
-            yield from r0
-    
-            
-    xx= [10*random.random() for x in range(5)]
-    
-    yy= [10*random.random() for y in range(5)]
-   
-    rr= [10*random.random() for r in range(5)]
-    
-    xcoord = get_x(xx)
-    ycoord = get_y(yy)
-    rad = get_r(rr)
-    
+    xx= [10*random.random() for x in range(10)]   
+    yy= [10*random.random() for y in range(10)]
+    rr= [10*random.random() for r in range(10)]
+
+    xcoord = get_coords(xx)
+    ycoord = get_coords(yy)
+    rad = get_coords(rr)
+
     p1 = Point(next(xcoord), next(ycoord))
     p2 = Point(next(xcoord), next(ycoord))
     p3 = Point(next(xcoord), next(ycoord))
-    
+
+
     c1 = Circle(p1, next(rad))
     c2 = Circle(p2, next(rad))
     c3 = Circle(p3, next(rad))
 
     circle_list = [c1, c2, c3]
-    
+
     inner_points = []
     for p in get_all_intersecting_points(circle_list):
         if is_contained_in_circles(p, circle_list):
             inner_points.append(p) 
-    
+
     center = get_polygon_center(inner_points)
-    
+
     in_json = json_data(center)
-    
+
     out_json = json.dumps(in_json, sort_keys=True,
-                          indent=4, default= json_data.jdefault)
-    
-    with open("data.json", 'a') as fw:
-        while center == None:
-            continue
-        fw.write(out_json)
+                            indent=4, default= json_data.jdefault)
+
+    with open("data.json", 'w') as fw:
+        if center != None:
+                fw.write(out_json)
+       
+            
+        
